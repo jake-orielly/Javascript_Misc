@@ -13,40 +13,46 @@ canvas {
 <script>
 
 var rectangle;
-
+var canvasWidth = 500;
+var canvasHeight = 500;
+    
 function startGame() {
-    rectangle = new component(30, 30, "red", 10, 120);
-    myGameArea.start();
+    rectangle = new component(30, 30, "red", 10, 120,"rectangle");
+    text = new component("16px", "Courier New", "black", 35, 48, "text", "3");
+    gameArea.start();
 }
 
-var myGameArea = {
+var gameArea = {
     canvas : document.createElement("canvas"),
     start : function() {
-        this.canvas.width = 480;
-        this.canvas.height = 270;
+        this.canvas.width = canvasWidth;
+        this.canvas.height = canvasHeight;
         this.context = this.canvas.getContext("2d");
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
         this.frameNo = 0;
         this.interval = setInterval(updateGameArea, 20);
-        window.addEventListener("mouseup", clicked); //creates listener for when mouse is clicked
+        window.addEventListener("mousedown", clicked); //creates listener for when mouse is clicked
+        window.addEventListener("mousemove", thing);
         },
     clear : function() {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
 }
 
-function component(width, height, color, x, y) {
+function component(width, height, color, x, y,type, text) {
     this.width = width;
     this.height = height; 
     this.x = x;
     this.y = y;
+    this.type = type;
+    this.text = text;
     this.update = function() {
-        ctx = myGameArea.context;
-        if (this.type == "text") {
-            ctx.font = this.width + " " + this.height;
+        ctx = gameArea.context;
+        if (this.type == "text") { //called if the component is a piece of text
+			ctx.font = this.width + " " + this.height;
             ctx.fillStyle = color;
-            ctx.fillText(this.text, this.x, this.y);
-        } else {
+			ctx.fillText(this.text, this.x, this.y);
+		} else {
             ctx.fillStyle = color;
             ctx.fillRect(this.x, this.y, this.width, this.height);
         }
@@ -54,7 +60,8 @@ function component(width, height, color, x, y) {
 }
 
 function updateGameArea() {
-    //gameArea.clear(); //Erase everything we drew for the last frame
+    gameArea.clear(); //Erase everything we drew for the last frame
+    text.update();
     rectangle.update();
 }
     
@@ -64,6 +71,18 @@ function clicked(event) { //called any time the user clicks
     rectangle.x = x;
     rectangle.y = y;
 }
+ 
+function thing(event) {
+    x = event.x;
+    y = event.y;
+
+    if (x > canvasWidth)
+        x = canvasWidth
+    if (y > canvasHeight)
+        y = canvasHeight;
+    
+    text.text = x + " , " + y;
+}    
 </script>
 </body>
 </html>
